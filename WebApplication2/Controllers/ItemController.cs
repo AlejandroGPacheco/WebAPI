@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,13 +14,22 @@ namespace WebApplication2.Controllers
     [ApiController]
 
     public class ItemController : Controller
+        
     {
-        string ConnectionString = "Data Source=A320LLHR\\SQLEXPRESS; Initial Catalog=practiceDB; Integrated Security=SSPI";
+        private IConfiguration Configuration;
+
+        public ItemController(IConfiguration _configuration)
+        {
+            Configuration = _configuration;
+        }
+
         public List<Item> list = new List<Item>()
         {
             new Item {Id = 1, Name = "Footbal", isComplete = false },
             new Item {Id = 2, Name = "Basketball", isComplete = true }
         };
+
+
         [HttpGet]
         public ActionResult<IEnumerable<Item>> GetAllItems()
         {
@@ -35,6 +45,8 @@ namespace WebApplication2.Controllers
                 //OleDbConnection connection = new OleDbConnection();
                 //SqlConnection cnn;
                 //string query = "SELECT * FROM dbo.ItemDB;";
+                string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
+               this.Configuration.GetH
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     con.Open();
@@ -61,6 +73,7 @@ namespace WebApplication2.Controllers
         [HttpPost]
         public string PostItem(Item item)
         {
+            string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
             try
             {
                 using (SqlConnection con = new SqlConnection(ConnectionString))
