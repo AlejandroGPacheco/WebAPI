@@ -46,7 +46,7 @@ namespace WebApplication2.Controllers
                 //SqlConnection cnn;
                 //string query = "SELECT * FROM dbo.ItemDB;";
                 string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
-               this.Configuration.GetH
+               
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     con.Open();
