@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ItemData.Data.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -17,153 +18,37 @@ namespace WebApplication2.Controllers
 
     {
         private IConfiguration Configuration;
+        private static ItemRepository items;
+        
 
         public ItemController(IConfiguration _configuration)
         {
             Configuration = _configuration;
+            items = new ItemRepository(_configuration);
         }
-
-        public List<Item> list = new List<Item>()
-        {
-            new Item {Id = 1, Name = "Footbal", isComplete = false },
-            new Item {Id = 2, Name = "Basketball", isComplete = true }
-        };
-
 
         [HttpGet]
-        public ActionResult<IEnumerable<Item>> GetAllItems()
+        public void GetItem()
         {
-            return list;
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<Item> GetItem(int id)
-        {
-            try
-            {
-
-                string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
-
-                using (SqlConnection con = new SqlConnection(ConnectionString))
-                {
-                    con.Open();
-                    SqlCommand command = new SqlCommand("SelectAllItem", con);
-                    command.CommandType = CommandType.StoredProcedure;
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Console.WriteLine(String.Format("{0} {1} {2}", reader[0], reader[1], reader[2]));
-                        }
-                    }
-                    
-                    con.Close();
-                }
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            return null;
+            items.GetItems();
         }
         [HttpPost]
         public string PostItem(Item item)
-        {
-            string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ConnectionString))
-                {
-                    con.Open();
-                    string query = "INSERT INTO dbo.ItemDB ([Id], [Name], [description]) VALUES (@Id, @Name, @Description);";
-                    using (SqlCommand command = new SqlCommand(query, con))
-                    {
-                        command.Parameters.Add("@id", SqlDbType.NVarChar).Value = item.Id;
-                        command.Parameters.Add("@name", SqlDbType.NVarChar).Value = item.Name;
-                        command.Parameters.Add("@description", SqlDbType.NVarChar).Value = item.isComplete;
-
-                        int rowAdded = command.ExecuteNonQuery();
-                        if (rowAdded > 0)
-                        {
-                            return "It worked";
-                        }
-
-                    }
-
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            return "Not worked";
-
+        {         
+            return items.PostItem(item);
         }
 
-        [HttpPut("{id}")]
-
-        public string putItem([FromBody] Item item, long UID)
+        [HttpPut]
+        public string PutItem(Item item)
         {
-            string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ConnectionString))
-                {
-                    con.Open();
-                    string query = "UPDATE dbo.ItemDB SET Name = @Name, Description = @Description WHERE Id = @id;";
-                    using (SqlCommand command = new SqlCommand(query, con))
-                    {
-                        command.Parameters.Add("@id", SqlDbType.NVarChar).Value = item.Id;
-                        command.Parameters.Add("@name", SqlDbType.NVarChar).Value = item.Name;
-                        command.Parameters.Add("@description", SqlDbType.NVarChar).Value = item.isComplete;
-
-
-                        int rowAdded = command.ExecuteNonQuery();
-                        if (rowAdded > 0)
-                        {
-                            return "It worked";
-                        }
-                        
-
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            return "Not worked";
+            return items.PutItem(item);
         }
+            
         [HttpDelete]
 
-        public string deleteRow(Item item)
+        public string DeleteItem(Item item)
         {
-
-            string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ConnectionString))
-                {
-                    con.Open();
-                    string query = "DELETE FROM dbo.ItemDB WHERE [Id] = @id";
-                    using (SqlCommand command = new SqlCommand(query, con))
-                    {
-                        command.Parameters.Add("@id", SqlDbType.NVarChar).Value = item.Id;
-                        int rowDeleted = command.ExecuteNonQuery();
-                        if (rowDeleted > 0)
-                        {
-                            return "It worked";
-                        }
-                    }
-
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            return "Not worked";
+            return items.DeleteItem(item);
         }
     }
         
