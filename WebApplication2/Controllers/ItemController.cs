@@ -14,7 +14,7 @@ namespace WebApplication2.Controllers
     [ApiController]
 
     public class ItemController : Controller
-        
+
     {
         private IConfiguration Configuration;
 
@@ -42,11 +42,8 @@ namespace WebApplication2.Controllers
             try
             {
 
-                //OleDbConnection connection = new OleDbConnection();
-                //SqlConnection cnn;
-                //string query = "SELECT * FROM dbo.ItemDB;";
                 string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
-               
+
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     con.Open();
@@ -59,7 +56,7 @@ namespace WebApplication2.Controllers
                             Console.WriteLine(String.Format("{0} {1} {2}", reader[0], reader[1], reader[2]));
                         }
                     }
-                    //Console.WriteLine("Successful");
+                    
                     con.Close();
                 }
 
@@ -91,7 +88,7 @@ namespace WebApplication2.Controllers
                         {
                             return "It worked";
                         }
-                        
+
                     }
 
                 }
@@ -103,5 +100,71 @@ namespace WebApplication2.Controllers
             return "Not worked";
 
         }
+
+        [HttpPut("{id}")]
+
+        public string putItem([FromBody] Item item, long UID)
+        {
+            string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConnectionString))
+                {
+                    con.Open();
+                    string query = "UPDATE dbo.ItemDB SET Name = @Name, Description = @Description WHERE Id = @id;";
+                    using (SqlCommand command = new SqlCommand(query, con))
+                    {
+                        command.Parameters.Add("@id", SqlDbType.NVarChar).Value = item.Id;
+                        command.Parameters.Add("@name", SqlDbType.NVarChar).Value = item.Name;
+                        command.Parameters.Add("@description", SqlDbType.NVarChar).Value = item.isComplete;
+
+
+                        int rowAdded = command.ExecuteNonQuery();
+                        if (rowAdded > 0)
+                        {
+                            return "It worked";
+                        }
+                        
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return "Not worked";
+        }
+        [HttpDelete]
+
+        public string deleteRow(Item item)
+        {
+
+            string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConnectionString))
+                {
+                    con.Open();
+                    string query = "DELETE FROM dbo.ItemDB WHERE [Id] = @id";
+                    using (SqlCommand command = new SqlCommand(query, con))
+                    {
+                        command.Parameters.Add("@id", SqlDbType.NVarChar).Value = item.Id;
+                        int rowDeleted = command.ExecuteNonQuery();
+                        if (rowDeleted > 0)
+                        {
+                            return "It worked";
+                        }
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return "Not worked";
+        }
     }
+        
 }
