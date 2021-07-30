@@ -12,6 +12,6 @@ namespace ItemData.Data.Interfaces
         void GetItems();
         string PostItem(Item item);
         string PutItem(Item item);
-        string DeleteItem(Item item);
+        string DeleteItem(int i);
     }
 }

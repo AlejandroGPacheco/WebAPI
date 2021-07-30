@@ -58,12 +58,13 @@ namespace ItemData.Data.Repositories
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     con.Open();
-                    string query = "INSERT INTO dbo.ItemDB ([Id], [Name], [description]) VALUES (@Id, @Name, @Description);";
-                    using (SqlCommand command = new SqlCommand(query, con))
+                    
+                    using (SqlCommand command = new SqlCommand("InsertItem", con))
                     {
-                        command.Parameters.Add("@id", SqlDbType.NVarChar).Value = item.Id;
-                        command.Parameters.Add("@name", SqlDbType.NVarChar).Value = item.Name;
-                        command.Parameters.Add("@description", SqlDbType.NVarChar).Value = item.isComplete;
+                        command.CommandType = CommandType.StoredProcedure;
+                        
+                        command.Parameters.Add("@Name", SqlDbType.NVarChar).Value = item.Name;
+                        command.Parameters.Add("@Description", SqlDbType.NVarChar).Value = item.Description;
 
                         int rowAdded = command.ExecuteNonQuery();
                         if (rowAdded > 0)
@@ -90,12 +91,13 @@ namespace ItemData.Data.Repositories
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     con.Open();
-                    string query = "UPDATE dbo.ItemDB SET Name = @Name, Description = @Description WHERE Id = @id;";
-                    using (SqlCommand command = new SqlCommand(query, con))
+                    
+                    using (SqlCommand command = new SqlCommand("UpdateItem", con))
                     {
+                        command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.Add("@id", SqlDbType.NVarChar).Value = item.Id;
                         command.Parameters.Add("@name", SqlDbType.NVarChar).Value = item.Name;
-                        command.Parameters.Add("@description", SqlDbType.NVarChar).Value = item.isComplete;
+                        command.Parameters.Add("@description", SqlDbType.NVarChar).Value = item.Description;
 
 
                         int rowAdded = command.ExecuteNonQuery();
@@ -115,7 +117,7 @@ namespace ItemData.Data.Repositories
             return "Not worked";
         }
 
-        public string DeleteItem(Item item)
+        public string DeleteItem(int i)
         {
 
             string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
@@ -124,10 +126,11 @@ namespace ItemData.Data.Repositories
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     con.Open();
-                    string query = "DELETE FROM dbo.ItemDB WHERE [Id] = @id";
-                    using (SqlCommand command = new SqlCommand(query, con))
+                    //string query = "DELETE FROM dbo.ItemDB WHERE [Id] = @id";
+                    using (SqlCommand command = new SqlCommand("DeleteItem", con))
                     {
-                        command.Parameters.Add("@id", SqlDbType.NVarChar).Value = item.Id;
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("@id", SqlDbType.Int).Value = i;
                         int rowDeleted = command.ExecuteNonQuery();
                         if (rowDeleted > 0)
                         {

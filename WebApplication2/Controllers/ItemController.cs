@@ -46,9 +46,9 @@ namespace WebApplication2.Controllers
             
         [HttpDelete]
 
-        public string DeleteItem(Item item)
+        public string DeleteItem()
         {
-            return items.DeleteItem(item);
+            return items.DeleteItem(9);
         }
     }
         
