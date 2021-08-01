@@ -28,9 +28,9 @@ namespace WebApplication2.Controllers
         }
 
         [HttpGet]
-        public void GetItem()
+        public List<string> GetItem()
         {
-            items.GetItems();
+            return items.GetItems();
         }
         [HttpPost]
         public string PostItem(Item item)
@@ -41,14 +41,15 @@ namespace WebApplication2.Controllers
         [HttpPut]
         public string PutItem(Item item)
         {
+            
             return items.PutItem(item);
         }
             
-        [HttpDelete]
+        [HttpDelete ("{id}")]
 
-        public string DeleteItem()
+        public string DeleteItem(int id)
         {
-            return items.DeleteItem(9);
+            return items.DeleteItem(id);
         }
     }
         

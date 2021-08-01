@@ -15,18 +15,20 @@ namespace ItemData.Data.Repositories
     public class ItemRepository : IItemRepository
     {
         private IConfiguration Configuration;
+        List<string> collectionOfItems = new List<string>();
 
         public ItemRepository(IConfiguration _configuration)
         {
             Configuration = _configuration;
         }
-        public void GetItems()
+        public List<string> GetItems()
         {
+            string temp;
             try
             {
 
                 string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
-
+                
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     con.Open();
@@ -36,19 +38,26 @@ namespace ItemData.Data.Repositories
                     {
                         while (reader.Read())
                         {
-                            Console.WriteLine(String.Format("{0} {1} {2}", reader[0], reader[1], reader[2]));
+                            temp = (String.Format("{0} {1} {2}", reader[0], reader[1], reader[2]));
+                            collectionOfItems.Add(temp);
                         }
+                        
                     }
+                    
 
                     con.Close();
+                    
                 }
-
+                
+                
             }
+            
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-            
+            return collectionOfItems;
+
         }
         public string PostItem(Item item)
         {
@@ -71,7 +80,6 @@ namespace ItemData.Data.Repositories
                         {
                             return "It worked";
                         }
-
                     }
 
                 }
@@ -85,13 +93,14 @@ namespace ItemData.Data.Repositories
         }
         public string PutItem([FromBody] Item item)
         {
+ 
             string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
             try
             {
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     con.Open();
-                    
+
                     using (SqlCommand command = new SqlCommand("UpdateItem", con))
                     {
                         command.CommandType = CommandType.StoredProcedure;
@@ -99,14 +108,11 @@ namespace ItemData.Data.Repositories
                         command.Parameters.Add("@name", SqlDbType.NVarChar).Value = item.Name;
                         command.Parameters.Add("@description", SqlDbType.NVarChar).Value = item.Description;
 
-
                         int rowAdded = command.ExecuteNonQuery();
                         if (rowAdded > 0)
                         {
                             return "It worked";
                         }
-
-
                     }
                 }
             }
@@ -114,10 +120,10 @@ namespace ItemData.Data.Repositories
             {
                 Console.WriteLine(e.Message);
             }
-            return "Not worked";
+            return "Not Worked";
         }
 
-        public string DeleteItem(int i)
+        public string DeleteItem(int id)
         {
 
             string ConnectionString = this.Configuration.GetConnectionString("MyConnection");
@@ -130,7 +136,7 @@ namespace ItemData.Data.Repositories
                     using (SqlCommand command = new SqlCommand("DeleteItem", con))
                     {
                         command.CommandType = CommandType.StoredProcedure;
-                        command.Parameters.Add("@id", SqlDbType.Int).Value = i;
+                        command.Parameters.Add("@id", SqlDbType.Int).Value = id;
                         int rowDeleted = command.ExecuteNonQuery();
                         if (rowDeleted > 0)
                         {
