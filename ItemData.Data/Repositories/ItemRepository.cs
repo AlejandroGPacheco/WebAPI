@@ -132,7 +132,6 @@ namespace ItemData.Data.Repositories
                 using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     con.Open();
-                    //string query = "DELETE FROM dbo.ItemDB WHERE [Id] = @id";
                     using (SqlCommand command = new SqlCommand("DeleteItem", con))
                     {
                         command.CommandType = CommandType.StoredProcedure;
