@@ -9,9 +9,9 @@ namespace ItemData.Data.Interfaces
 {
     interface IItemRepository
     {
-        void GetItems();
+        List<string> GetItems();
         string PostItem(Item item);
         string PutItem(Item item);
-        string DeleteItem(int i);
+        string DeleteItem(int id);
     }
 }
