@@ -1,12 +1,10 @@
 ﻿using ItemData.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using System;
+using Serilog;
+
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+
 using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
@@ -15,33 +13,42 @@ namespace WebApplication2.Controllers
     [ApiController]
 
     public class ItemController : Controller
-
     {
         private IConfiguration Configuration;
         private static ItemRepository items;
-        
+        ILogger _logger;
 
-        public ItemController(IConfiguration _configuration)
+        
+        public ItemController(IConfiguration _configuration, ILogger logger )
         {
             Configuration = _configuration;
             items = new ItemRepository(_configuration);
+            _logger = logger;
+ 
         }
 
         [HttpGet]
         public List<string> GetItem()
         {
-            return items.GetItems();
+            List<string> itemList = items.GetItems();
+            foreach (string x in itemList)
+            {
+                _logger.Information(x);
+            }
+            return itemList;
+
         }
         [HttpPost]
         public string PostItem(Item item)
-        {         
+        {
+            _logger.Information("Item Inserted: " + item.Name + " " + item.Description);
             return items.PostItem(item);
         }
 
         [HttpPut]
         public string PutItem(Item item)
         {
-            
+            _logger.Information("Item Updated: " + item.Id + " " + item.Name + " " + item.Description);
             return items.PutItem(item);
         }
             
@@ -49,8 +56,14 @@ namespace WebApplication2.Controllers
 
         public string DeleteItem(int id)
         {
+            _logger.Information("Item with ID " + id + " has been deleted");
             return items.DeleteItem(id);
         }
-    }
+
         
+
+    }
+
+    
+
 }
