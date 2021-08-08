@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,11 +17,14 @@ namespace ItemData.Data.Repositories
     {
         private IConfiguration Configuration;
         List<string> collectionOfItems = new List<string>();
+        
 
         public ItemRepository(IConfiguration _configuration)
         {
             Configuration = _configuration;
+            
         }
+        
         public List<string> GetItems()
         {
             string temp;
@@ -151,7 +155,8 @@ namespace ItemData.Data.Repositories
             }
             return "Not worked";
         }
-
+        
 
     }
+
 }
